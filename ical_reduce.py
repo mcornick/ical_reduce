@@ -32,5 +32,5 @@ for event in original_cal.walk():
         if compare > now:
             reduced_cal.add_component(event)
 
-with open(reduced_name, "w") as reduced:
+with open(reduced_name, "wb") as reduced:
     reduced.write(reduced_cal.to_ical())
