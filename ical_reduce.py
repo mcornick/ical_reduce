@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
 
 from copy import deepcopy
 from datetime import date, datetime
