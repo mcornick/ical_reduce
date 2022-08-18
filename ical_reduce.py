@@ -33,12 +33,6 @@ def ical_reduce(original_name, reduced_name):
 
 
 if __name__ == "__main__":
-    try:
-        original = sys.argv[1]
-    except IndexError:
-        original = "original.ics"
-    try:
-        reduced = sys.argv[2]
-    except IndexError:
-        reduced = "reduced.ics"
+    original = sys.argv[1]
+    reduced = sys.argv[2]
     ical_reduce(original, reduced)
