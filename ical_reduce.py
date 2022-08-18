@@ -1,28 +1,30 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
 
-from copy import deepcopy
-from datetime import date, datetime
-from sys import argv
+import copy
+import datetime
+import sys
 
-from icalendar import Calendar
-from pytz import utc
+import icalendar
+import pytz
 
 
 def ical_reduce(original_name, reduced_name):
-    now = datetime.now(utc)
-    reduced_cal = Calendar()
+    now = datetime.datetime.now(pytz.utc)
+    reduced_cal = icalendar.Calendar()
 
     with open(original_name, "rb") as original:
-        original_cal = Calendar.from_ical(original.read())
+        original_cal = icalendar.Calendar.from_ical(original.read())
 
     for event in original_cal.walk():
         if event.name == "VEVENT":
             start = event.decoded("dtstart")
-            compare = deepcopy(start)
-            if type(compare) is date:
-                compare = datetime.combine(compare, datetime.min.time())
-            compare = compare.replace(tzinfo=utc)
+            compare = copy.deepcopy(start)
+            if type(compare) is datetime.date:
+                compare = datetime.datetime.combine(
+                    compare, datetime.datetime.min.time()
+                )
+            compare = compare.replace(tzinfo=pytz.utc)
             if compare > now:
                 reduced_cal.add_component(event)
 
@@ -32,11 +34,11 @@ def ical_reduce(original_name, reduced_name):
 
 if __name__ == "__main__":
     try:
-        original = argv[1]
+        original = sys.argv[1]
     except IndexError:
         original = "original.ics"
     try:
-        reduced = argv[2]
+        reduced = sys.argv[2]
     except IndexError:
         reduced = "reduced.ics"
     ical_reduce(original, reduced)
