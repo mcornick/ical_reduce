@@ -79,6 +79,10 @@ def ical_reduce(original_name, reduced_name):
 
 
 if __name__ == "__main__":
-    original = sys.argv[1]
-    reduced = sys.argv[2]
+    try:
+        original = sys.argv[1]
+        reduced = sys.argv[2]
+    except IndexError:
+        sys.stderr.write("Usage: ical_reduce.py original_ical reduced_ical")
+        sys.exit(1)
     ical_reduce(original, reduced)
