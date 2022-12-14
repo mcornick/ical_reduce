@@ -28,29 +28,16 @@ import copy
 import datetime
 import sys
 
+import click
 import icalendar
 import pytz
 
 
-def ical_reduce(original_name, reduced_name):
+def ical_reduce(original, reduced):
     now = datetime.datetime.now(pytz.utc)
     reduced_cal = icalendar.Calendar()
 
-    try:
-        with open(original_name, "rb") as original:
-            original_cal = icalendar.Calendar.from_ical(original.read())
-    except FileNotFoundError:
-        sys.stderr.write("{} not found\n".format(original_name))
-        sys.exit(1)
-    except IsADirectoryError:
-        sys.stderr.write("{} is a directory\n".format(original_name))
-        sys.exit(1)
-    except PermissionError:
-        sys.stderr.write("No permission to read {}\n".format(original_name))
-        sys.exit(1)
-    except OSError:
-        sys.stderr.write("OS error trying to read {}\n".format(original_name))
-        sys.exit(1)
+    original_cal = icalendar.Calendar.from_ical(original.read())
 
     for event in original_cal.walk():
         if event.name == "VEVENT":
@@ -64,25 +51,12 @@ def ical_reduce(original_name, reduced_name):
             if compare > now:
                 reduced_cal.add_component(event)
 
-    try:
-        with open(reduced_name, "wb") as reduced:
-            reduced.write(reduced_cal.to_ical())
-    except IsADirectoryError:
-        sys.stderr.write("{} is a directory\n".format(reduced_name))
-        sys.exit(1)
-    except PermissionError:
-        sys.stderr.write("No permission to write {}\n".format(reduced_name))
-        sys.exit(1)
-    except OSError:
-        sys.stderr.write("OS error trying to write {}\n".format(reduced_name))
-        sys.exit(1)
+    reduced.write(reduced_cal.to_ical())
 
 
-if __name__ == "__main__":
-    try:
-        original = sys.argv[1]
-        reduced = sys.argv[2]
-    except IndexError:
-        sys.stderr.write("Usage: ical_reduce.py original_ical reduced_ical")
-        sys.exit(1)
+@click.command()
+@click.argument("original", type=click.File("r"))
+@click.argument("reduced", type=click.File("w"))
+def cli(original, reduced):
+    """Remove past events from ORIGINAL and write to REDUCED."""
     ical_reduce(original, reduced)

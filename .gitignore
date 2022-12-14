@@ -1,1 +1,4 @@
-*.ics
+.direnv
+.envrc
+__pycache__
+ical_reduce.egg-info
